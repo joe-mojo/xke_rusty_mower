@@ -1,4 +1,5 @@
 
+#[derive(Debug)]
 pub enum Direction {
 	North,
 	East,
@@ -7,9 +8,21 @@ pub enum Direction {
 }
 
 impl Direction {
-	const VALUES : Array = [Direction::North, Direction::East, Direction::South, Direction::West];
+	//const VALUES: [Direction; 4] = [Direction::North, Direction::East, Direction::South, Direction::West];
+	//const LETTERS:[char; 4] = ['N', 'E', 'S', 'O'];
 
-	fn dx(&self) -> isize {
+	pub fn from_char(c: &char) -> Option<Direction> {
+		match *c {
+			'N' => Some(Direction::North),
+			'E' => Some(Direction::East),
+			'S' => Some(Direction::South),
+			'O' => Some(Direction::West),
+			'W' => Some(Direction::West),
+			_ => None
+		}
+	}
+
+	pub fn dx(&self) -> isize {
 		match *self {
 			Direction::North => 0,
 			Direction::East => 1,
@@ -18,7 +31,7 @@ impl Direction {
 		}
 	}
 
-	fn dy(&self) -> isize {
+	pub fn dy(&self) -> isize {
 		match *self {
 			Direction::North => 1,
 			Direction::East => 0,
@@ -27,7 +40,7 @@ impl Direction {
 		}
 	}
 
-	fn turnRight(&self) -> Direction {
+	pub fn turn_right(&self) -> Direction {
 		match *self {
 			Direction::North => Direction::East,
 			Direction::East => Direction::South,
@@ -36,7 +49,7 @@ impl Direction {
 		}
 	}
 
-	fn turnLeft(&self) -> Direction {
+	pub fn turn_left(&self) -> Direction {
 		match *self {
 			Direction::North => Direction::West,
 			Direction::East => Direction::North,

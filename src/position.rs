@@ -1,9 +1,10 @@
-use std::fmt;
-use std::string::String;
+//use std::fmt;
+//use std::string::String;
 
+#[derive(Debug)]
 pub struct Position {
-	x: usize,
-	y: usize
+	pub x: usize,
+	pub y: usize
 }
 
 

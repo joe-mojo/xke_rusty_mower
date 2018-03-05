@@ -2,7 +2,14 @@ use std::env;
 use std::process;
 use std::fs::File;
 use std::io::prelude::*;
+extern crate regex;
+#[macro_use] extern crate lazy_static;
 mod lawn;
+mod mower;
+mod position;
+mod direction;
+use mower::Mower;
+use lawn::Lawn;
 
 //parse file = parse mowerInstruction *
 //parse mowerInstruction = parse position, parse orientation, parse commands
@@ -23,8 +30,18 @@ fn main() {
 	println!("With text:\n{}", contents);
 
 	let mut line_split = contents.split("\n");
-	let lawn = lawn::parse(line_split.next().expect("First line not found"));
-	let result = lawn.map(|lawn| println!("Lawn: {}x{}", lawn.width, lawn.height));
+	let lawn = Lawn::parse(line_split.next().expect("First line not found"));
+
+	let mower = Mower::parse(line_split.next().expect("Mower line not found"));
+
+	let result = match (lawn, mower) {
+		(Ok(l), Ok(m)) => {
+			println!("{:?} {:?}", l, m);
+			Ok(())
+		},
+		(Err(e), _) => Err(e),
+		(_, Err(e)) => Err(e)
+	};
 
 	match result {
 		Ok(_) => println!("Done."),
