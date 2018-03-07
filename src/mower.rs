@@ -1,6 +1,5 @@
 use regex::Regex;
 use regex::Captures;
-use regex::Match;
 use direction::Direction;
 use position::Position;
 

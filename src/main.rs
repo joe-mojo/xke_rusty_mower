@@ -8,8 +8,10 @@ mod lawn;
 mod mower;
 mod position;
 mod direction;
+mod command;
 use mower::Mower;
 use lawn::Lawn;
+use command::Command;
 
 //parse file = parse mowerInstruction *
 //parse mowerInstruction = parse position, parse orientation, parse commands
@@ -30,9 +32,11 @@ fn main() {
 	println!("With text:\n{}", contents);
 
 	let mut line_split = contents.split("\n");
-	let lawn = Lawn::parse(line_split.next().expect("First line not found"));
+	let lawn = Lawn::parse(line_split.next().expect("First line with lawn dimension not found"));
 
 	let mower = Mower::parse(line_split.next().expect("Mower line not found"));
+
+	let cmdRes = Command::parse(line_split.next().expect("Command line not found"));
 
 	let result = match (lawn, mower) {
 		(Ok(l), Ok(m)) => {
