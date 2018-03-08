@@ -2,11 +2,16 @@ use regex::Regex;
 use regex::Captures;
 use direction::Direction;
 use position::Position;
+use command::Command;
+use lawn::Lawn;
+use std::vec::Vec;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Mower {
+	pub id: String,
 	pub position: Position,
-	pub direction: Direction
+	pub direction: Direction,
+	pub working_area: Lawn
 }
 
 impl Mower {
@@ -18,7 +23,7 @@ impl Mower {
 		captures.get(idx).map(|m| m.as_str()).and_then(|char_str| char_str.chars().next())
 	}
 
-	pub fn parse(line: &str) -> Result<Mower, String> {
+	pub fn parse(line: &str, id: String, lawn: &Lawn) -> Result<Mower, String> {
 		lazy_static! {
 			static ref REGX: Regex = Regex::new(r"^(\d+) (\d+) ([NSEO])$").unwrap();
 		}
@@ -31,43 +36,39 @@ impl Mower {
 				maybe_y.and_then(|y| {
 					maybe_dir.map(|dir|{
 						Mower {
+							id,
 							position: Position { x, y},
-							direction: dir
+							direction: dir,
+							working_area: lawn.clone()
 						}
 					})
 				})
 			})
 		}).ok_or(format!("Cannot parse Mower from {}", line))
 	}
-}
-/*
-#[derive(Debug)]
-pub struct Lawn {
-	pub width: usize,
-	pub height: usize
-}
 
-fn parse_usize(maybe_line: Option<&str>, what: &str) -> Result<usize, String> {
-	maybe_line.map(|wstr:&str| Ok(wstr))
-		.unwrap_or_else(|| Err(format!("{} not found in {:?}", what, maybe_line)))
-		.and_then(|wstr:&str|
-			wstr.parse::<usize>().map_err(|err: ParseIntError| err.to_string())
-		)
-}
-
-impl Lawn {
-
-	pub fn parse(line: &str) -> Result<Lawn, String> {
-		let mut line_split = line.split(" ");
-		let w = parse_usize(line_split.next(), "width");
-		let h = parse_usize(line_split.next(), "height");
-
-		match (w, h) {
-			(Ok(wnum), Ok(hnum)) => Ok(Lawn {width:wnum, height:hnum} ),
-			(Err(e), _) => Err(e),
-			(_, Err(e)) => Err(e)
+	fn next_position(&self) -> Position {
+		let future_position = self.position.clone() + self.direction.go();
+		if future_position.x < self.working_area.width && future_position.y < self.working_area.height {
+			future_position
+		} else {
+			self.position.clone()
 		}
+	}
 
+	fn apply(&mut self, command: &Command) -> () {
+		match *command {
+			Command::G => self.direction = self.direction.turn_left(),
+			Command::D => self.direction = self.direction.turn_right(),
+			Command::A => {
+				self.position = self.next_position();
+			}
+		}
+	}
+
+	pub fn exec(&self, commands: Vec<Command>) -> Mower {
+		let mut new_mower = self.clone();
+		commands.iter().for_each(|cmd| new_mower.apply(cmd));
+		new_mower
 	}
 }
-*/

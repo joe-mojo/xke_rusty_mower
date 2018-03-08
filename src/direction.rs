@@ -1,5 +1,6 @@
+use position::Move;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Direction {
 	North,
 	East,
@@ -8,8 +9,6 @@ pub enum Direction {
 }
 
 impl Direction {
-	//const VALUES: [Direction; 4] = [Direction::North, Direction::East, Direction::South, Direction::West];
-	//const LETTERS:[char; 4] = ['N', 'E', 'S', 'O'];
 
 	pub fn from_char(c: &char) -> Option<Direction> {
 		match *c {
@@ -22,21 +21,12 @@ impl Direction {
 		}
 	}
 
-	pub fn dx(&self) -> isize {
+	pub fn go(&self) -> Move {
 		match *self {
-			Direction::North => 0,
-			Direction::East => 1,
-			Direction::South => 0,
-			Direction::West => -1
-		}
-	}
-
-	pub fn dy(&self) -> isize {
-		match *self {
-			Direction::North => 1,
-			Direction::East => 0,
-			Direction::South => -1,
-			Direction::West => 0
+			Direction::North => Move { dx: 0, dy: 1},
+			Direction::East => Move { dx: 1, dy: 0},
+			Direction::South => Move { dx: 0, dy: -1},
+			Direction::West => Move { dx: -1, dy: 0}
 		}
 	}
 

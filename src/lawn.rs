@@ -1,6 +1,6 @@
 use std::num::ParseIntError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Lawn {
 	pub width: usize,
 	pub height: usize
@@ -26,7 +26,6 @@ impl Lawn {
 			(Err(e), _) => Err(e),
 			(_, Err(e)) => Err(e)
 		}
-
 	}
 }
 
