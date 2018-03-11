@@ -23,12 +23,12 @@ impl Mower {
 		captures.get(idx).map(|m| m.as_str()).and_then(|char_str| char_str.chars().next())
 	}
 
-	pub fn parse(line: &str, id: String, lawn: &Lawn) -> Result<Mower, String> {
+	pub fn parse(line: String, id: String, lawn: &Lawn) -> Result<Mower, String> {
 		lazy_static! {
 			static ref REGX: Regex = Regex::new(r"^(\d+) (\d+) ([NSEO])$").unwrap();
 		}
 
-		REGX.captures(line).and_then(|captures: Captures| {
+		REGX.captures(line.as_str()).and_then(|captures: Captures| {
 			let maybe_x = Mower::capture_usize(1, &captures);
 			let maybe_y = Mower::capture_usize(2, &captures);
 			let maybe_dir = Mower::capture_char(3, &captures).and_then(|d| Direction::from_char(&d));

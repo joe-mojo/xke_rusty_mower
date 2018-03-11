@@ -16,15 +16,15 @@ fn parse_usize(maybe_line: Option<&str>, what: &str) -> Result<usize, String> {
 
 impl Lawn {
 
-	pub fn parse(line: &str) -> Result<Lawn, String> {
+	pub fn parse(line: String) -> Result<Lawn, String> {
 		let mut line_split = line.split(" ");
 		let w = parse_usize(line_split.next(), "width");
 		let h = parse_usize(line_split.next(), "height");
 
 		match (w, h) {
 			(Ok(wnum), Ok(hnum)) => Ok(Lawn {width:wnum, height:hnum} ),
-			(Err(e), _) => Err(e),
-			(_, Err(e)) => Err(e)
+			(Err(e), _) => Err(format!("Invalid width for Lawn in \"{}\" because of {}", line,  e)),
+			(_, Err(e)) => Err(format!("Invalid height for Lawn in \"{}\" because of {}", line,  e)),
 		}
 	}
 }

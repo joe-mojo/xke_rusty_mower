@@ -17,39 +17,64 @@ use command::Command;
 
 //TODO tests => refactor main ? (testability)
 
-fn next_line<'a>(split: &mut Split<'a, &'a str>) -> Option<&'a str> {
+fn next_line<'b>(split: &mut Split<'b, &'b str>) -> Option<&'b str> {
 	split.skip_while(|line| line.is_empty()).next()
 }
 
-fn exec_instructions(contents: String) -> Result<Vec<Mower>, String> {
-	let mut line_split = contents.split("\n");
-	let working_area: Lawn = Lawn::parse(next_line(&mut line_split).expect("First line with lawn dimension not found")).unwrap();
-	let mut final_states: Vec<Mower> = Vec::new();
-	let mut id_counter: usize = 0;
-	let mut mower_line = next_line(&mut line_split);
-	let mut command_line = next_line(&mut line_split);
-
-	loop {
-		let tried_mower = Mower::parse(mower_line.expect("Mower line not found"), id_counter.to_string(), &working_area)
-			.and_then(|mower|{
-				println!("Mower setup: {:?}", &mower);
-				Command::parse(command_line.expect("Command line not found"))
-					.map(|commands|{
-						mower.exec(commands)
-					})
-			});
-
-		final_states.push(tried_mower.unwrap());
-
-		mower_line = next_line(&mut line_split);
-		if mower_line.is_none() {
-			break;
-		}
-		command_line = next_line(&mut line_split);
-		id_counter = id_counter + 1;
+fn next_2_lines<'a>(split: &mut Split<'a, &'a str>) -> Result<Option<(String, String)>, String> {
+	match (next_line(split), next_line(split)) {
+		(Some(mower_line), Some(cmd_line)) => Ok(Some((mower_line.to_string(), cmd_line.to_string()))),
+		(None, _) => Ok(None),
+		(Some(mower_line), None) => Err(format!("Expected 2 lines, found only one: \"{}\"", mower_line))
 	}
+}
 
-	Ok(final_states)
+fn parse_mower_and_commands(lines: (String, String), mower_id: String, working_area: &Lawn) -> Result<(Mower, Vec<Command>), String> {
+	match (Mower::parse(lines.0, mower_id, working_area), Command::parse(lines.1)) {
+		(Ok(mower), Ok(commands)) => Ok((mower, commands)),
+		(Err(mesg), _) => Err(mesg),
+		(_, Err(mesg)) => Err(mesg)
+	}
+}
+
+fn run_mower(mower_and_cmds: (Mower, Vec<Command>)) -> Mower {
+	mower_and_cmds.0.exec(mower_and_cmds.1)
+}
+
+fn exec_instructions(contents: String) -> Result<Vec<Result<Mower, String>>, String> {
+	let mut line_split = contents.split("\n");
+	let mut id_counter: usize = 0;
+
+
+	let report_res = next_line(&mut line_split).map(|line_str| line_str.to_string())
+		.ok_or("First line with lawn dimension not found".to_string())
+		.and_then(Lawn::parse)
+		.map(|working_area: Lawn|{
+			let mut exec_report: Vec<Result<Mower, String>> = Vec::new();
+			loop {
+				let input: Result<Option<(String, String)>, String> = next_2_lines(&mut line_split);
+				match input {
+					Ok(Some(lines)) => {
+						let mower_result = parse_mower_and_commands(
+							lines,
+							format!("M{}", id_counter),
+							&working_area
+						).map(run_mower);
+						exec_report.push(mower_result);
+						id_counter = id_counter + 1;
+					},
+					Ok(None) => {
+						break;
+					},
+					Err(mesg) => {
+						exec_report.push(Err(mesg));
+					}
+				};
+			};
+			exec_report
+	});
+
+	report_res
 }
 
 fn main() {
@@ -65,8 +90,14 @@ fn main() {
 	in_file.read_to_string(&mut contents).expect("Something went wrong reading the file");
 	println!("With text:\n{}", contents);
 
-	let execution_report: Result<Vec<Mower>, String> = exec_instructions(contents);
+	let execution_report = exec_instructions(contents);
 
-	println!("Final mower states: {:?}", execution_report);
+
+	match execution_report {
+		Ok(mower_results) => {
+			mower_results.iter().for_each(|res| println!("{:?}", res))
+		},
+		Err(mesg) => println!("Could not mow: {}", mesg)
+	}
 
 }
