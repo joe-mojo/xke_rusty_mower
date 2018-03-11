@@ -14,6 +14,8 @@ mod command;
 use mower::Mower;
 use lawn::Lawn;
 use command::Command;
+#[cfg(test)]
+extern crate rand;
 
 //TODO tests => refactor main ? (testability)
 
@@ -88,13 +90,13 @@ fn main() {
 
 	let mut contents = String::new();
 	in_file.read_to_string(&mut contents).expect("Something went wrong reading the file");
-	println!("With text:\n{}", contents);
+	//println!("With text:\n{}", contents);
 
 	let execution_report = exec_instructions(contents);
 
-
 	match execution_report {
 		Ok(mower_results) => {
+			println!("Results:");
 			mower_results.iter().for_each(|res| println!("{:?}", res))
 		},
 		Err(mesg) => println!("Could not mow: {}", mesg)
