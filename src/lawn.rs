@@ -2,8 +2,7 @@ use std::num::ParseIntError;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Lawn {
-	pub width: usize,
-	pub height: usize
+	//TODO define struct members. Don't forget to allow access from outside.
 }
 
 fn parse_usize(maybe_line: Option<&str>, what: &str) -> Result<usize, String> {
@@ -17,9 +16,9 @@ fn parse_usize(maybe_line: Option<&str>, what: &str) -> Result<usize, String> {
 impl Lawn {
 
 	pub fn parse(line: String) -> Result<Lawn, String> {
-		let mut line_split = line.split(" ");
-		let w = parse_usize(line_split.next(), "width");
-		let h = parse_usize(line_split.next(), "height");
+		//TODO split line (see String and Split doc, Split is like an Iterator) (1 line to write)
+		let w = parse_usize(None, "width"); // TODO replace None
+		let h = parse_usize(None, "height"); //TODO replace None
 
 		match (w, h) {
 			(Ok(wnum), _) if wnum == 0 => Err("Width must be greater 0".to_string()),

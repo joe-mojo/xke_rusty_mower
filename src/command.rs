@@ -2,32 +2,23 @@ use std::vec::Vec;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
-	G, D, A
+	//TODO 1 define command enum elements
+	WRONG// <-- Remove this line once you have coded the real thing
 }
 
 impl Command {
 
 	pub fn from_char(c: &char) -> Option<Command>{
-		match *c {
-			'G' => Some(Command::G),
-			'D' => Some(Command::D),
-			'A' => Some(Command::A),
-			_ => None
-		}
+		//TODO 2 Use pattern matching. Pay attention, your argument is a reference; you will need to dereference it to call `match`
+		None // <-- Remove this line once you have coded the real thing
 	}
 
 	pub fn parse(line: String) -> Result<Vec<Command>, String> {
 		let empty_vec:Vec<Command> = Vec::with_capacity(line.len());
-		line.chars().map(|c| {
-			Command::from_char(&c).ok_or(format!("Cannot parse commands: invalid char '{}' in line {}", c, line))
-		}).fold(Ok(empty_vec), |acc: Result<Vec<Command>, String>, elt: Result<Command, String>| {
-			acc.and_then(|mut v: Vec<Command>|{
-				elt.map(|e: Command| {
-					v.push(e);
-					v
-				})
-			})
-		})
+		//TODO 3 This is where the party begins. Map chars of line to Command instance, then fold to a Result of Vec `Result<Vec<Command>, String>`
+		//Hint: empty_vec is only the zero of the fold.
+		//Hint: inside fold, there is somewhere a lambda that take a mut v: Vec<Command> as argument, because you will push elements into it.
+		Ok(empty_vec) // <-- Remove this line once you have coded the real thing
 	}
 }
 

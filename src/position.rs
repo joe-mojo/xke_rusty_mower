@@ -17,16 +17,11 @@ impl Add<Move> for Position {
 	type Output = Position;
 	fn add(self, other: Move) -> Position {
 		let mut pos = Position {x:0, y:0};
-		if other.dx >= 0 {
-			pos.x = self.x + (other.dx as usize);
-		} else {
-			pos.x = max((self.x as isize) - (-other.dx), 0) as usize;
-		}
-		if other.dy >= 0 {
-			pos.y = self.y + (other.dy as usize);
-		} else {
-			pos.y = max((self.y as isize) - (-other.dy), 0) as usize;
-		}
+		//TODO add missing lines to return the right Position depending on the Move. Next Position = Old Position + Move
+		//TODO remember that (0,0) is  at south-west and (max, max) at North-East
+		//Hint: Don't forget the boundaries
+		//Hint: type usize is unsigned => saves some conditions
+		//Hint: we are operating on usize (unsigned) and isize (signed). Some conversions needed to avoid panic...
 		pos
 	}
 }

@@ -27,7 +27,8 @@ Try to start with model; proposed order:
 1. [position](src/position.rs)
 1. [direction](src/direction.rs)
 1. [mower](src/mower.rs)
-1. Finish with [main](src/main.rs)
+
+[main](src/main.rs) is (maybe hopefully) done.
 
 ### Online REPL
 

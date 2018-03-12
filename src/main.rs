@@ -17,7 +17,6 @@ use command::Command;
 #[cfg(test)]
 extern crate rand;
 
-//TODO tests => refactor main ? (testability)
 
 fn next_line<'b>(split: &mut Split<'b, &'b str>) -> Option<&'b str> {
 	split.skip_while(|line| line.is_empty()).next()

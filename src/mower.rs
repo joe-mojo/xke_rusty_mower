@@ -15,55 +15,39 @@ pub struct Mower {
 }
 
 impl Mower {
+	//Simple regx helper: retrieve capture group at idx and convert it to usize if possible
 	fn capture_usize(idx: usize, captures: &Captures) -> Option<usize> {
 		captures.get(idx).map(|m| m.as_str()).and_then(|num_str| num_str.parse::<usize>().ok())
 	}
-
+	//Simple regx helper: retrieve capture groupe at idx and convert it as chat if possible
 	fn capture_char(idx: usize, captures: &Captures) -> Option<char> {
 		captures.get(idx).map(|m| m.as_str()).and_then(|char_str| char_str.chars().next())
 	}
 
 	pub fn parse(line: String, id: String, lawn: &Lawn) -> Result<Mower, String> {
-		lazy_static! {
-			static ref REGX: Regex = Regex::new(r"^(\d+) (\d+) ([NSEOW])$").unwrap();
-		}
+		//TODO 1 look on WWW for "Rust lazy_static REGX" to know what to write here
+		//The goal is to create a lazy value to comple REGEX once and for all on first call
 
 		REGX.captures(line.as_str()).and_then(|captures: Captures| {
-			let maybe_x = Mower::capture_usize(1, &captures);
-			let maybe_y = Mower::capture_usize(2, &captures);
-			let maybe_dir = Mower::capture_char(3, &captures).and_then(|d| Direction::from_char(&d));
-			maybe_x.and_then(|x| {
-				maybe_y.and_then(|y| {
-					maybe_dir.map(|dir|{
-						Mower {
-							id,
-							position: Position { x, y},
-							direction: dir,
-							working_area: lawn.clone()
-						}
-					})
-				})
-			})
+			//TODO 2 replace the next 3 None using capture_* helpers above.
+			let maybe_x: Option<usize> = None; //easy
+			let maybe_y: Option<usize> = None; //easy
+			let maybe_dir: Option<Direction> = None; //starts like the first 2 but you need a few maps(lambdas)
+			//TODO 3: 404 for comprehension not found. How do you desugar a for comprehension ?
+			Err("Replace me".to_string())
 		}).ok_or(format!("Cannot parse Mower from {}", line))
 	}
 
 	fn next_position(&self) -> Position {
-		let future_position = self.position.clone() + self.direction.go();
-		if future_position.x < self.working_area.width && future_position.y < self.working_area.height {
-			future_position
-		} else {
-			self.position.clone()
-		}
+		//TODO 4 compute next position: this is the position of the mower if it would go forward in the direction it is pointing to.
+		//Hint: Use mower position and direction.
+		let future_position: Position = Position{x:0, y:0}; // <-- TODO replace Position{x:0, y:0}.
+		//Hint: don't forget to check the Lawn boundaries...
+		future_position
 	}
 
 	fn apply(&mut self, command: &Command) -> () {
-		match *command {
-			Command::G => self.direction = self.direction.turn_left(),
-			Command::D => self.direction = self.direction.turn_right(),
-			Command::A => {
-				self.position = self.next_position();
-			}
-		}
+		//TODO 5 pattern match command and mutate this Mower to execute the command
 	}
 
 	pub fn exec(&self, commands: Vec<Command>) -> Mower {
