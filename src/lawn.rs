@@ -42,7 +42,7 @@ mod tests {
 	}
 
 	#[test]
-	fn parse_should_resturn_the_right_error() {
+	fn parse_should_return_the_right_error() {
 		assert_eq!(
 			Lawn::parse("-1 3".to_string()),
 			Err("Invalid width for Lawn in \"-1 3\" because of invalid digit found in string".to_string())
